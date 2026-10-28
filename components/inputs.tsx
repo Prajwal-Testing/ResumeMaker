@@ -126,9 +126,9 @@ export function ManualForm() {
 
 const LANGUAGES = ['English', 'Hindi', 'Marathi', 'Tamil', 'Telugu', 'Bengali', 'Gujarati', 'Kannada'];
 const SCRIPT = [
-  { q: 'Tell me about your education. Where did you study, and when?', a: 'I completed a B.E. in Computer Engineering with AI and ML at Bharat College of Engineering, Mumbai, from 2022 to 2026.' },
-  { q: 'What work experience or training should go on the resume?', a: 'I was a data science trainee at Imarticus Learning, doing EDA and building supervised ML models with Pandas and NumPy.' },
-  { q: 'Which projects would you like to highlight?', a: 'SmartShield-AI for malware detection, a PyPI package for Wi-Fi management on Linux, and a FastAPI task backend.' },
+  { q: 'Tell me about your education. Where did you study, and when?', a: 'I completed a B.Sc. in Computer Science at Example State University, from 2020 to 2024.' },
+  { q: 'What work experience or training should go on the resume?', a: 'I was a data analyst intern at Sample Analytics Ltd., doing exploratory analysis with Pandas and NumPy.' },
+  { q: 'Which projects would you like to highlight?', a: 'a malware classifier prototype served through FastAPI, and an open-source command-line toolkit.' },
 ];
 const FOLLOW_UPS = ['What dates should I use for that role?', 'Which tools did you use on that project?', 'Do you have any certifications or awards to add?'];
 

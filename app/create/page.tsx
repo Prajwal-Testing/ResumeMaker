@@ -30,7 +30,7 @@ export default function CreatePage() {
             <p className="mt-2 max-w-xl text-muted">Choose how you want to start. You can switch methods at any time. Your details stay in this session.</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button variant="secondary" onClick={() => { setResume(sampleResume); notify('Prajwal Kedari demonstration resume loaded. Edit any field.'); }}>Load demo resume</Button>
+            <Button variant="secondary" onClick={() => { setResume(sampleResume); notify('Fictional demonstration resume loaded. Edit any field.'); }}>Load demo resume</Button>
             <Button variant="ghost" onClick={reset}>Reset data</Button>
           </div>
         </div>

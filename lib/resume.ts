@@ -59,29 +59,25 @@ export const emptyResume: Resume = {
   target: blankFields('target'),
 };
 
-// Demonstration resume for Prajwal Kedari, drawn only from his CV and portfolio.
-// Email and phone are omitted because this sample appears on the public landing page.
-// Add them in the workspace. Every field is editable.
-export const DEMO_LABEL = 'Demonstration resume: Prajwal Kedari. Every field is editable.';
+// Fictional demonstration resume. Every name, institution, employer, link and
+// figure below is invented. It is safe to show on the public landing page.
+// Do not replace it with a real person's CV.
+export const DEMO_LABEL = 'Fictional demonstration resume: Alex Morgan. Every field is editable.';
 export const sampleResume: Resume = {
-  personal: { name: 'Prajwal Kedari', email: '', phone: '', city: 'Mumbai, Maharashtra, India', linkedin: 'linkedin.com/in/prajwalkedari', github: 'github.com/prajwalkedari', portfolio: 'prajwalkedari.is-a.dev' },
-  summary: 'Computer engineering graduate specialising in AI and ML, with a focus on Linux systems, backend development, and cloud fundamentals. Builds FastAPI services, containerised deployments, and a published open-source PyPI package.',
-  education: [{ degree: 'B.E. in Computer Science & Engineering (AI & ML)', institution: 'Bharat College of Engineering, University of Mumbai', year: '2022 – 2026', grade: '', coursework: '' }],
-  experience: [{ role: 'Data Science Trainee', company: 'Imarticus Learning, Mumbai', dates: '2025 – 2026', details: '120-hour professional industry training program.\nPerformed exploratory data analysis and statistical validation, and built supervised ML models with Pandas and NumPy.\nWrote optimised relational SQL queries for business metrics and transactional reporting.' }],
-  skills: { languages: 'Python, SQL, JavaScript, Java, C++', frameworks: 'FastAPI, Flask, Node.js, Express.js, Pydantic', databases: 'PostgreSQL, MySQL, SQLite, MongoDB, Supabase', tools: 'Linux, shell scripting, Docker, Git, GitHub, AWS (EC2, S3, IAM, VPC), Pandas, NumPy, scikit-learn, XGBoost, MLflow' },
+  personal: { name: 'Alex Morgan', email: '', phone: '', city: 'Example City, Country', linkedin: 'linkedin.com/in/alex-morgan-example', github: 'github.com/alex-morgan-example', portfolio: 'alex-morgan.example.com' },
+  summary: 'Software engineer with a background in data analysis and backend services. Builds REST APIs, containerised deployments, and small open-source tools. Seeking an applied engineering role in machine learning.',
+  education: [{ degree: 'B.Sc. in Computer Science', institution: 'Example State University', year: '2020 – 2024', grade: '', coursework: 'Algorithms, Databases, Machine Learning, Operating Systems' }],
+  experience: [{ role: 'Data Analyst Intern', company: 'Sample Analytics Ltd.', dates: '2023 – 2024', details: 'Completed a six-month analytics internship.\nAnalysed sales data with Pandas and NumPy and produced weekly reports for the operations team.\nWrote SQL queries for reporting dashboards.' }],
+  skills: { languages: 'Python, SQL, JavaScript, Java', frameworks: 'FastAPI, Flask, Express.js', databases: 'PostgreSQL, MySQL, SQLite', tools: 'Linux, Git, Docker, pandas, scikit-learn' },
   projects: [
-    { title: 'WiFi Management Tool (PyPI)', tech: 'Python, Linux CLI, nmcli, packaging', link: 'pypi.org/project/wifimangement-linux', details: 'Published an open-source Python library wrapping nmcli for Wi-Fi scanning, connection control, network toggling, and interface discovery.' },
-    { title: 'SmartShield-AI: Malware Detection Pipeline', tech: 'Python, FastAPI, XGBoost, Docker, MLflow', link: 'github.com/prajwalkedari', details: 'Classifies malware from PE headers with 95% accuracy, serves inference through FastAPI, and tracks experiments with MLflow.' },
-    { title: 'AI-Powered Task Management Backend', tech: 'Python, FastAPI, PostgreSQL, Supabase, JWT, Docker', link: 'github.com/prajwalkedari', details: 'REST APIs with JWT authentication, role-based access control, status filtering, and OpenAPI documentation. Integrates the Gemini API for task summaries.' },
-    { title: 'HOWJIS Fashion (live e-commerce)', tech: 'WooCommerce, PHP, MySQL, REST webhooks', link: 'prajwalkedari.is-a.dev', details: 'Runs an active online store on Linux hosting with automated inventory and payment webhooks.' },
+    { title: 'Example CLI Toolkit', tech: 'Python, Linux CLI, packaging', link: 'github.com/alex-morgan-example/cli-toolkit', details: 'Published an open-source command-line utility with automated tests and documentation.' },
+    { title: 'Malware Classifier Prototype', tech: 'Python, FastAPI, XGBoost, Docker', link: 'github.com/alex-morgan-example/classifier', details: 'Trained a classifier on file-header features and served predictions through a REST API.' },
   ],
-  certifications: [{ name: 'Machine Learning Specialization', issuer: 'DeepLearning.AI and Stanford University', year: '' }],
+  certifications: [{ name: 'Introductory Machine Learning Course', issuer: 'Example Online Academy', year: '2023' }],
   achievements: [
-    { title: 'Published research: SmartShield-AI (IJCRT)', details: 'Paper ID IJCRT2603747.' },
-    { title: 'Smart India Hackathon', details: 'Selected team leader for technical architecture and code management.' },
-    { title: 'Competitive programming', details: 'Solved 150+ DSA problems on LeetCode and HackerRank.' },
+    { title: 'Regional programming contest', details: 'Placed in the top ten teams.' },
   ],
-  target: { jobTitle: 'Applied AI/ML Engineer', jobDescription: '' },
+  target: { jobTitle: 'Applied Machine Learning Engineer', jobDescription: '' },
 };
 
 export function validateResume(r: Resume): string[] {
