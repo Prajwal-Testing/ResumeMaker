@@ -1,7 +1,7 @@
 import { PenLine, Mic, FileUp } from 'lucide-react';
 import { Header, LinkButton } from '@/components/ui';
 import { ScaledResume } from '@/components/resume-document';
-import { sampleResume, TEMPLATES } from '@/lib/resume';
+import { DEMO_LABEL, sampleResume, TEMPLATES } from '@/lib/resume';
 
 const WAYS = [
   { icon: PenLine, title: 'Write manually', body: 'Work through guided sections for education, experience, projects, and skills. Add or reorder entries as you go.' },
@@ -32,8 +32,9 @@ export default function Home() {
               <LinkButton href="/#templates" variant="secondary">Explore Templates</LinkButton>
             </div>
           </div>
-          <div className="hidden justify-center md:flex">
-            <ScaledResume resume={sampleResume} template="classic" scale={0.5} />
+          <div className="hidden flex-col items-center gap-3 md:flex">
+            <ScaledResume resume={sampleResume} template="classic" scale={0.56} />
+            <p className="text-sm text-muted">{DEMO_LABEL}</p>
           </div>
         </section>
 
@@ -66,6 +67,13 @@ export default function Home() {
               </li>
             ))}
           </ol>
+        </section>
+
+        <section id="privacy" className="mx-auto max-w-6xl px-5 py-16">
+          <div className="grid gap-6 md:grid-cols-[1fr_2fr] md:gap-12">
+            <h2 className="font-serif text-2xl text-navy">Your details, your decision</h2>
+            <p className="leading-relaxed text-ink/75">Nothing is sent to Gemini until you review the request and approve it. This prototype stores nothing on a server, and you can clear all data from the workspace at any time. Information sent to Gemini is subject to Google’s policies and your account settings.</p>
+          </div>
         </section>
 
         <section id="templates" className="border-t border-line bg-white/60">

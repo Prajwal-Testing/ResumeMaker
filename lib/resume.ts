@@ -59,17 +59,29 @@ export const emptyResume: Resume = {
   target: blankFields('target'),
 };
 
-// Fictional sample data for demonstration only.
+// Demonstration resume for Prajwal Kedari, drawn only from his CV and portfolio.
+// Email and phone are omitted because this sample appears on the public landing page.
+// Add them in the workspace. Every field is editable.
+export const DEMO_LABEL = 'Demonstration resume: Prajwal Kedari. Every field is editable.';
 export const sampleResume: Resume = {
-  personal: { name: 'Maya Thornton', email: 'maya.thornton@example.com', phone: '+91 98200 00000', city: 'Pune', linkedin: 'linkedin.com/in/mayathornton', github: 'github.com/mayathornton', portfolio: 'mayathornton.dev' },
-  summary: 'Final-year computer science student building backend services and data tools. Looking for an entry-level backend role where I can ship reliable software and learn from a strong engineering team.',
-  education: [{ degree: 'B.Tech. Computer Science', institution: 'Lakeside Institute of Technology', year: '2026', grade: '8.4 CGPA', coursework: 'Databases, distributed systems, machine learning, operating systems' }],
-  experience: [{ role: 'Software Engineering Intern', company: 'Northwind Labs', dates: 'June 2025 to August 2025', details: 'Built a REST service for invoice ingestion using Python and FastAPI.\nCut report generation time from 40 seconds to under 5 seconds.' }],
-  skills: { languages: 'Python, TypeScript, SQL', frameworks: 'FastAPI, React, Next.js', databases: 'PostgreSQL, Redis', tools: 'Git, Docker, Linux' },
-  projects: [{ title: 'Study Planner', tech: 'React, Node.js, PostgreSQL', link: 'github.com/mayathornton/study-planner', details: 'Turns course deadlines into a weekly plan. Piloted with 120 students.' }],
-  certifications: [{ name: 'AWS Cloud Practitioner', issuer: 'Amazon Web Services', year: '2025' }],
-  achievements: [{ title: 'Best paper, student research symposium', details: 'Presented a retrieval model for searching course catalogues.' }],
-  target: { jobTitle: 'Backend Engineer (Entry Level)', jobDescription: 'Build and maintain APIs, write tests, and work with PostgreSQL and cloud services.' },
+  personal: { name: 'Prajwal Kedari', email: '', phone: '', city: 'Mumbai, Maharashtra, India', linkedin: 'linkedin.com/in/prajwalkedari', github: 'github.com/prajwalkedari', portfolio: 'prajwalkedari.is-a.dev' },
+  summary: 'Computer engineering graduate specialising in AI and ML, with a focus on Linux systems, backend development, and cloud fundamentals. Builds FastAPI services, containerised deployments, and a published open-source PyPI package.',
+  education: [{ degree: 'B.E. in Computer Science & Engineering (AI & ML)', institution: 'Bharat College of Engineering, University of Mumbai', year: '2022 – 2026', grade: '', coursework: '' }],
+  experience: [{ role: 'Data Science Trainee', company: 'Imarticus Learning, Mumbai', dates: '2025 – 2026', details: '120-hour professional industry training program.\nPerformed exploratory data analysis and statistical validation, and built supervised ML models with Pandas and NumPy.\nWrote optimised relational SQL queries for business metrics and transactional reporting.' }],
+  skills: { languages: 'Python, SQL, JavaScript, Java, C++', frameworks: 'FastAPI, Flask, Node.js, Express.js, Pydantic', databases: 'PostgreSQL, MySQL, SQLite, MongoDB, Supabase', tools: 'Linux, shell scripting, Docker, Git, GitHub, AWS (EC2, S3, IAM, VPC), Pandas, NumPy, scikit-learn, XGBoost, MLflow' },
+  projects: [
+    { title: 'WiFi Management Tool (PyPI)', tech: 'Python, Linux CLI, nmcli, packaging', link: 'pypi.org/project/wifimangement-linux', details: 'Published an open-source Python library wrapping nmcli for Wi-Fi scanning, connection control, network toggling, and interface discovery.' },
+    { title: 'SmartShield-AI: Malware Detection Pipeline', tech: 'Python, FastAPI, XGBoost, Docker, MLflow', link: 'github.com/prajwalkedari', details: 'Classifies malware from PE headers with 95% accuracy, serves inference through FastAPI, and tracks experiments with MLflow.' },
+    { title: 'AI-Powered Task Management Backend', tech: 'Python, FastAPI, PostgreSQL, Supabase, JWT, Docker', link: 'github.com/prajwalkedari', details: 'REST APIs with JWT authentication, role-based access control, status filtering, and OpenAPI documentation. Integrates the Gemini API for task summaries.' },
+    { title: 'HOWJIS Fashion (live e-commerce)', tech: 'WooCommerce, PHP, MySQL, REST webhooks', link: 'prajwalkedari.is-a.dev', details: 'Runs an active online store on Linux hosting with automated inventory and payment webhooks.' },
+  ],
+  certifications: [{ name: 'Machine Learning Specialization', issuer: 'DeepLearning.AI and Stanford University', year: '' }],
+  achievements: [
+    { title: 'Published research: SmartShield-AI (IJCRT)', details: 'Paper ID IJCRT2603747.' },
+    { title: 'Smart India Hackathon', details: 'Selected team leader for technical architecture and code management.' },
+    { title: 'Competitive programming', details: 'Solved 150+ DSA problems on LeetCode and HackerRank.' },
+  ],
+  target: { jobTitle: 'Applied AI/ML Engineer', jobDescription: '' },
 };
 
 export function validateResume(r: Resume): string[] {

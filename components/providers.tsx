@@ -9,6 +9,7 @@ type AppState = {
   template: TemplateId;
   setTemplate: (t: TemplateId) => void;
   notify: (message: string) => void;
+  reset: () => void;
 };
 
 const AppContext = createContext<AppState | null>(null);
@@ -31,9 +32,15 @@ export function Providers({ children }: { children: ReactNode }) {
     timer.current = setTimeout(() => setMessage(''), 4000);
   }, []);
 
+  const reset = useCallback(() => {
+    setResume(emptyResume);
+    setTemplate('classic');
+    notify('Data cleared. Your draft is empty.');
+  }, [notify]);
+
   const value = useMemo(
-    () => ({ resume, setResume, template, setTemplate, notify }),
-    [resume, template, notify],
+    () => ({ resume, setResume, template, setTemplate, notify, reset }),
+    [resume, template, notify, reset],
   );
 
   return (

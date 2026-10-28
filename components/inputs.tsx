@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState, type ChangeEvent, type DragEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronDown, ChevronUp, FileText, Mic, Pause, Play, Plus, Square, Trash2, Upload, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, FileText, Mic, MicOff, Play, PhoneOff, Plus, Trash2, Upload, X } from 'lucide-react';
 import { Button, Notice } from '@/components/ui';
 import { useApp } from '@/components/providers';
-import { SECTIONS, blankEntry, sampleResume, validateResume, type Fields, type FieldDef, type Resume, type Section, type SectionId } from '@/lib/resume';
+import { SECTIONS, blankEntry, validateResume, type Fields, type FieldDef, type Resume, type Section, type SectionId } from '@/lib/resume';
 
 const inputCls = 'mt-1.5 w-full rounded-md border border-line bg-white px-3 py-2.5 text-[15px] text-ink placeholder:text-muted/70 focus:border-navy focus:outline-none focus:ring-2 focus:ring-navy/20';
 
@@ -124,100 +124,180 @@ export function ManualForm() {
   );
 }
 
-const SAMPLE_LINES = [
-  'I am a final-year computer engineering student focused on AI and machine learning.',
-  'I built a course search tool in Python and FastAPI that ranks results by relevance.',
-  'My strongest skills are Python, SQL, and PyTorch, and I have used Docker on most projects.',
-  'I completed a six-week backend internship where I wrote tests for a payments API.',
+const LANGUAGES = ['English', 'Hindi', 'Marathi', 'Tamil', 'Telugu', 'Bengali', 'Gujarati', 'Kannada'];
+const SCRIPT = [
+  { q: 'Tell me about your education. Where did you study, and when?', a: 'I completed a B.E. in Computer Engineering with AI and ML at Bharat College of Engineering, Mumbai, from 2022 to 2026.' },
+  { q: 'What work experience or training should go on the resume?', a: 'I was a data science trainee at Imarticus Learning, doing EDA and building supervised ML models with Pandas and NumPy.' },
+  { q: 'Which projects would you like to highlight?', a: 'SmartShield-AI for malware detection, a PyPI package for Wi-Fi management on Linux, and a FastAPI task backend.' },
 ];
+const FOLLOW_UPS = ['What dates should I use for that role?', 'Which tools did you use on that project?', 'Do you have any certifications or awards to add?'];
 
-type Rec = 'idle' | 'recording' | 'paused' | 'stopped';
+type Phase = 'idle' | 'thinking' | 'speaking' | 'listening' | 'ended' | 'error';
+type Msg = { id: number; role: 'assistant' | 'user'; text: string; lang?: string };
+
+const PHASE_TEXT: Record<Phase, string> = {
+  idle: 'Not started. Nothing is captured until you start a conversation.',
+  thinking: 'Thinking about your last answer.',
+  speaking: 'Asking a follow-up question.',
+  listening: 'Listening for your answer.',
+  ended: 'Conversation ended. Review the details before confirming.',
+  error: 'Microphone access is blocked, so this conversation cannot continue.',
+};
 
 export function VoiceInput() {
-  const { setResume, notify } = useApp();
-  const [rec, setRec] = useState<Rec>('idle');
-  const [transcript, setTranscript] = useState('');
-  const [supported, setSupported] = useState(true);
-  const nextLine = useRef(0);
-  const textRef = useRef<HTMLTextAreaElement>(null);
+  const { notify } = useApp();
+  const [phase, setPhase] = useState<Phase>('idle');
+  const [muted, setMuted] = useState(false);
+  const [lang, setLang] = useState('English');
+  const [msgs, setMsgs] = useState<Msg[]>([]);
+  const [turn, setTurn] = useState(0);
+  const [editId, setEditId] = useState<number | null>(null);
+  const [draft, setDraft] = useState('');
+  const [reviewing, setReviewing] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
+  const nextId = useRef(0);
+  const langRef = useRef(lang);
+  langRef.current = lang;
 
+  const add = (role: Msg['role'], text: string, language?: string) => {
+    nextId.current += 1;
+    const id = nextId.current;
+    setMsgs((m) => [...m, { id, role, text, lang: language }]);
+  };
+
+  // Simulated turn-taking only. No audio is captured or played.
   useEffect(() => {
-    if (rec !== 'recording') return;
-    const id = setInterval(() => {
-      const line = SAMPLE_LINES[nextLine.current];
-      if (line === undefined) {
-        setRec('stopped');
-        return;
-      }
-      nextLine.current += 1;
-      setTranscript((t) => (t ? `${t}\n${line}` : line));
-    }, 2600);
-    return () => clearInterval(id);
-  }, [rec]);
+    let t: ReturnType<typeof setTimeout> | undefined;
+    if (phase === 'thinking') {
+      t = setTimeout(() => { add('assistant', SCRIPT[turn].q); setPhase('speaking'); }, 1200);
+    } else if (phase === 'speaking') {
+      t = setTimeout(() => setPhase('listening'), 1800);
+    } else if (phase === 'listening' && !muted) {
+      t = setTimeout(() => {
+        add('user', SCRIPT[turn].a, langRef.current);
+        if (turn + 1 >= SCRIPT.length) setPhase('ended');
+        else { setTurn(turn + 1); setPhase('thinking'); }
+      }, 2400);
+    }
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, turn, muted]);
 
-  if (!supported) {
-    return (
-      <div className="space-y-4">
-        <Notice tone="warn" title="Voice input is not available in this browser">
-          Type your details in the manual form instead, or upload a file.
-        </Notice>
-        <Button variant="secondary" onClick={() => setSupported(true)}>Show voice controls</Button>
-      </div>
-    );
-  }
+  const running = phase === 'thinking' || phase === 'speaking' || phase === 'listening';
+  const userMsgs = msgs.filter((m) => m.role === 'user');
 
-  const status: Record<Rec, string> = {
-    idle: 'Ready. Your browser asks for microphone access only after you press Start.',
-    recording: 'Recording. Pause or stop at any time.',
-    paused: 'Paused. Resume when you are ready.',
-    stopped: 'Stopped. Review and correct the transcript before using it.',
+  const start = () => {
+    setMsgs([]); setTurn(0); setReviewing(false); setConfirmed(false); setMuted(false); setPhase('thinking');
+  };
+  const saveEdit = () => {
+    setMsgs((m) => m.map((x) => (x.id === editId ? { ...x, text: draft } : x)));
+    setEditId(null);
+    notify('Transcript line updated.');
   };
 
   return (
     <div className="space-y-8">
-      <Notice title="Prototype">
-        This screen does not access your microphone. The transcript shows sample text so you can see the flow.
+      <Notice title="Prototype conversation">
+        This is a simulated conversation. It does not access your microphone, and nothing is sent to Gemini. Live voice arrives with the extension integration, which asks for microphone permission only after you start.
       </Notice>
 
-      <div className="flex flex-wrap items-center gap-6">
-        <div className={`flex h-20 w-20 items-center justify-center rounded-full border ${rec === 'recording' ? 'border-navy bg-navy text-white' : 'border-line bg-white text-navy'}`} aria-hidden="true">
-          <Mic size={30} />
+      <div className="grid gap-8 md:grid-cols-[200px_1fr]">
+        <div className="flex flex-col items-start gap-5">
+          <div aria-hidden="true" className={`flex h-24 w-24 items-center justify-center rounded-full border-2 transition-colors duration-300 ${running ? 'border-navy bg-navy/5 text-navy' : 'border-line bg-white text-muted'} ${phase === 'listening' && !muted ? 'motion-safe:animate-pulse' : ''}`}>
+            {muted ? <MicOff size={30} /> : <Mic size={30} />}
+          </div>
+          <div>
+            <label htmlFor="lang" className="block text-sm font-medium text-ink">Conversation language</label>
+            <select id="lang" value={lang} onChange={(e) => setLang(e.target.value)} className="mt-1.5 rounded-md border border-line bg-white px-3 py-2 text-sm">
+              {LANGUAGES.map((l) => <option key={l}>{l}</option>)}
+            </select>
+          </div>
         </div>
-        <p role="status" className="max-w-md text-sm text-ink/80">{status[rec]}</p>
-      </div>
 
-      <div className="flex flex-wrap gap-2">
-        {rec !== 'recording' && (
-          <Button onClick={() => setRec('recording')}><Play size={16} />{rec === 'paused' ? 'Resume' : 'Start Recording'}</Button>
-        )}
-        {rec === 'recording' && <Button variant="secondary" onClick={() => setRec('paused')}><Pause size={16} />Pause</Button>}
-        <Button variant="secondary" disabled={rec === 'idle' || rec === 'stopped'} onClick={() => setRec('stopped')}><Square size={16} />Stop</Button>
-        <Button variant="ghost" onClick={() => { setRec('stopped'); textRef.current?.focus(); }}>Review Transcript</Button>
+        <div>
+          <p className="text-sm text-muted">Current state</p>
+          <p role="status" aria-live="polite" className="mt-1 font-medium text-ink">
+            {PHASE_TEXT[phase]}{phase === 'listening' && muted ? ' Microphone muted.' : ''}
+          </p>
+          <div className="mt-5 flex flex-wrap gap-2">
+            {!running && <Button onClick={start}><Play size={16} />{phase === 'idle' ? 'Start conversation' : 'Start again'}</Button>}
+            <Button variant="secondary" aria-pressed={muted} disabled={!running} onClick={() => setMuted((m) => !m)}>
+              {muted ? <Mic size={16} /> : <MicOff size={16} />}{muted ? 'Unmute' : 'Mute'}
+            </Button>
+            <Button variant="secondary" disabled={!running} onClick={() => setPhase('ended')}><PhoneOff size={16} />End conversation</Button>
+            <Button variant="ghost" disabled={userMsgs.length === 0} onClick={() => setReviewing(true)}>Review details</Button>
+          </div>
+          {phase === 'error' ? (
+            <div className="mt-6">
+              <Notice tone="error" title="Microphone access is blocked">
+                Allow microphone access for this site in your browser settings, then start again. You can also type your details in the manual form.
+              </Notice>
+            </div>
+          ) : (
+            <Button variant="ghost" className="mt-4" disabled={running} onClick={() => setPhase('error')}>Simulate blocked microphone</Button>
+          )}
+        </div>
       </div>
 
       <div>
-        <label htmlFor="transcript" className="block text-sm font-medium text-ink">Transcript</label>
-        <textarea
-          id="transcript"
-          ref={textRef}
-          rows={8}
-          value={transcript}
-          onChange={(e) => setTranscript(e.target.value)}
-          placeholder="Your transcript appears here while recording. You can edit it before using it."
-          className={inputCls}
-        />
-        <div className="mt-4 flex flex-wrap items-center gap-3">
-          <Button disabled={!transcript.trim()} onClick={() => { setResume(sampleResume); notify('Prototype: sample fields replaced your draft.'); }}>Structure transcript</Button>
-          <Button variant="ghost" onClick={() => setSupported(false)}>Preview unsupported-browser state</Button>
-        </div>
+        <h2 className="text-sm font-medium text-ink">Conversation</h2>
+        <ol aria-label="Conversation transcript" className="mt-3 max-h-96 space-y-4 overflow-y-auto rounded-md border border-line bg-white p-5">
+          {msgs.length === 0 && (
+            <li className="text-sm text-muted">Your conversation appears here. You can answer in any supported language. Replies are shown as prototype text.</li>
+          )}
+          {msgs.map((m) => (
+            <li key={m.id} className={m.role === 'user' ? 'ml-8 text-right' : 'mr-8'}>
+              <p className="text-xs text-muted">{m.role === 'assistant' ? 'ResumeMate (prototype)' : `You${m.lang ? `, ${m.lang}` : ''}`}</p>
+              {editId === m.id ? (
+                <div className="mt-1 text-left">
+                  <label htmlFor={`edit-${m.id}`} className="sr-only">Edit this transcript line</label>
+                  <textarea id={`edit-${m.id}`} rows={3} value={draft} onChange={(e) => setDraft(e.target.value)} className={inputCls} />
+                  <div className="mt-2 flex gap-2">
+                    <Button onClick={saveEdit}>Save line</Button>
+                    <Button variant="ghost" onClick={() => setEditId(null)}>Cancel</Button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <p className={`mt-1 rounded-md px-3 py-2 text-left leading-relaxed ${m.role === 'user' ? 'bg-navy/5 text-ink' : 'border border-line text-ink'}`}>{m.text}</p>
+                  {m.role === 'user' && (
+                    <Button variant="ghost" className="mt-1 px-2 py-1 text-xs" onClick={() => { setEditId(m.id); setDraft(m.text); }}>Edit</Button>
+                  )}
+                </>
+              )}
+            </li>
+          ))}
+        </ol>
       </div>
+
+      <div>
+        <h2 className="text-sm font-medium text-ink">Follow-up questions you may hear</h2>
+        <ul className="mt-3 space-y-2 text-sm text-ink/80">
+          {FOLLOW_UPS.map((f) => <li key={f} className="border-l-2 border-line pl-3">{f}</li>)}
+        </ul>
+      </div>
+
+      {reviewing && !confirmed && (
+        <div className="rounded-md border border-line bg-white p-5">
+          <h2 className="font-medium text-ink">Confirm before using these details</h2>
+          <p className="mt-1 text-sm text-muted">Only your answers are listed. Nothing is sent until you approve an extension request later.</p>
+          <ul className="mt-4 list-disc space-y-2 pl-5 text-sm">
+            {userMsgs.map((m) => <li key={m.id}>{m.text}</li>)}
+          </ul>
+          <div className="mt-5 flex flex-wrap gap-2">
+            <Button onClick={() => { setConfirmed(true); notify('Prototype: confirmation recorded. Nothing was structured or sent.'); }}>Use these details</Button>
+            <Button variant="ghost" onClick={() => setReviewing(false)}>Keep editing</Button>
+          </div>
+        </div>
+      )}
+      {confirmed && <Notice title="Confirmed in prototype">Mapping answers to resume fields and sending requests are not connected yet.</Notice>}
     </div>
   );
 }
 
 const ACCEPT = ['pdf', 'docx', 'txt'];
 const MAX_BYTES = 5 * 1024 * 1024;
-const EXTRACT = 'Maya Thornton\nmaya.thornton@example.com | Pune\n\nEducation\nB.Tech. Computer Science, Lakeside Institute of Technology, 2026\n\nProjects\nStudy Planner: scheduling app built with React and PostgreSQL.';
+const EXTRACT = 'Placeholder text for layout review. Nothing was read from your file.';
 
 export function FileUpload() {
   const { setResume, notify } = useApp();
@@ -314,13 +394,13 @@ export function FileUpload() {
       {progress === 100 && (
         <div className="space-y-4">
           <Notice title="Check the extracted text">
-            Fix anything that came through wrong. If this PDF is scanned, the text may be missing and OCR may be needed.
+            Prototype: this text is placeholder content, not read from your file. If a PDF is scanned, its text may be missing and OCR may be needed later.
           </Notice>
           <div>
             <label htmlFor="extracted" className="block text-sm font-medium text-ink">Extracted content</label>
             <textarea id="extracted" rows={8} value={text} onChange={(e) => setText(e.target.value)} className={inputCls} />
           </div>
-          <Button onClick={() => { setResume(sampleResume); notify('Prototype: extracted fields replaced your draft.'); }}>Use extracted content</Button>
+          <Button onClick={() => notify('Confirmed in prototype. Nothing was read from your file or sent.')}>Confirm extracted details</Button>
         </div>
       )}
 

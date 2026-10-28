@@ -17,7 +17,7 @@ type MethodId = (typeof METHODS)[number]['id'];
 const PHASES = ['Choose a method', 'Add details', 'Review', 'Generate and preview'];
 
 export default function CreatePage() {
-  const { setResume, notify } = useApp();
+  const { setResume, notify, reset } = useApp();
   const [method, setMethod] = useState<MethodId>('manual');
 
   return (
@@ -29,7 +29,10 @@ export default function CreatePage() {
             <h1 className="font-serif text-3xl text-navy md:text-4xl">Create your resume</h1>
             <p className="mt-2 max-w-xl text-muted">Choose how you want to start. You can switch methods at any time. Your details stay in this session.</p>
           </div>
-          <Button variant="secondary" onClick={() => { setResume(sampleResume); notify('Sample details loaded into your draft.'); }}>Load sample data</Button>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="secondary" onClick={() => { setResume(sampleResume); notify('Prajwal Kedari demonstration resume loaded. Edit any field.'); }}>Load demo resume</Button>
+            <Button variant="ghost" onClick={reset}>Reset data</Button>
+          </div>
         </div>
 
         <ol className="mt-8 grid grid-cols-4 gap-2 text-xs text-muted md:text-sm" aria-label="Progress">
