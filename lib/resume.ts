@@ -64,7 +64,7 @@ export const emptyResume: Resume = {
 // Do not replace it with a real person's CV.
 export const DEMO_LABEL = 'Fictional demonstration resume: Alex Morgan. Every field is editable.';
 export const sampleResume: Resume = {
-  personal: { name: 'Alex Morgan', email: '', phone: '', city: 'Example City, Country', linkedin: 'linkedin.com/in/alex-morgan-example', github: 'github.com/alex-morgan-example', portfolio: 'alex-morgan.example.com' },
+  personal: { name: 'Alex Morgan', email: 'alex.morgan@example.com', phone: '', city: 'Example City, Country', linkedin: 'linkedin.com/in/alex-morgan-example', github: 'github.com/alex-morgan-example', portfolio: 'alex-morgan.example.com' },
   summary: 'Software engineer with a background in data analysis and backend services. Builds REST APIs, containerised deployments, and small open-source tools. Seeking an applied engineering role in machine learning.',
   education: [{ degree: 'B.Sc. in Computer Science', institution: 'Example State University', year: '2020 – 2024', grade: '', coursework: 'Algorithms, Databases, Machine Learning, Operating Systems' }],
   experience: [{ role: 'Data Analyst Intern', company: 'Sample Analytics Ltd.', dates: '2023 – 2024', details: 'Completed a six-month analytics internship.\nAnalysed sales data with Pandas and NumPy and produced weekly reports for the operations team.\nWrote SQL queries for reporting dashboards.' }],

@@ -37,3 +37,7 @@ Last verified in the development sandbox:
 - `package-lock.json` matches `package.json` exactly.
 
 Not yet verified: `npm ci`, `npm run build`, and lint. The sandbox could not reach the npm registry, so run these locally before deploying.
+
+## Integration status
+
+See `docs/INTEGRATION-STATUS.md` for the verified status of the frontend, the Chrome extension, and their protocol. In short: the bridge client and payload serializer exist in `lib/extension-bridge.ts`, and they are tested against the extension's validator. The React UI is not yet connected to them. LaTeX compilation, file import, and deployment are not implemented or deployed.
